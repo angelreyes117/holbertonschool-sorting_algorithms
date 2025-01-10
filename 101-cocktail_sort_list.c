@@ -1,69 +1,69 @@
 #include "sort.h"
+#include <stdio.h>
 
 /**
- * swap_nodes - Swaps two adjacent nodes in a doubly linked list.
- * @list: Double pointer to the head of the list
- * @node1: Pointer to the first node to swap
- * @node2: Pointer to the second node to swap
+ * swap - swaps a node with the next node in the list
+ * @list: double pointer to the beginning of the list
+ * @node: node to swap
+ *
+ * Return: void
  */
-void swap_nodes(listint_t **list, listint_t *node1, listint_t *node2)
+void swap(listint_t **list, listint_t *node)
 {
-	if (node1->prev)
-		node1->prev->next = node2;
+	node->next->prev = node->prev;
+	if (node->prev)
+		node->prev->next = node->next;
 	else
-		*list = node2;
-
-	if (node2->next)
-		node2->next->prev = node1;
-
-	node1->next = node2->next;
-	node2->prev = node1->prev;
-	node1->prev = node2;
-	node2->next = node1;
+		*list = node->next;
+	node->prev = node->next;
+	node->next = node->next->next;
+	node->prev->next = node;
+	if (node->next)
+		node->next->prev = node;
 }
 
 /**
- * cocktail_sort_list - Sorts a doubly linked list of integers in ascending
- *                      order using the Cocktail shaker sort algorithm.
+ * cocktail_sort_list - sorts a doubly linked list of integers in ascending
+ * order using the Cocktail shaker sort algorithm
  * @list: Double pointer to the head of the doubly linked list
+ *
+ * Return: void
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *current;
-	int swapped = 1;
+	char swapped = 1;
+	listint_t *temp;
 
-	if (!list || !*list || !(*list)->next)
+	if (list == NULL || *list == NULL)
 		return;
-
-	while (swapped)
+	temp = *list;
+	while (swapped != 0)
 	{
 		swapped = 0;
-
-		/* Forward pass */
-		for (current = *list; current->next; current = current->next)
+		while (temp->next != NULL)
 		{
-			if (current->n > current->next->n)
+			if (temp->next->n < temp->n)
 			{
-				swap_nodes(list, current, current->next);
-				print_list(*list);
+				swap(list, temp);
 				swapped = 1;
+				print_list(*list);
 			}
+			else
+				temp = temp->next;
 		}
-
-		if (!swapped)
+		if (swapped == 0)
 			break;
-
 		swapped = 0;
-
-		/* Backward pass */
-		for (current = current->prev; current->prev; current = current->prev)
+		while (temp->prev != NULL)
 		{
-			if (current->n < current->prev->n)
+			if (temp->prev->n > temp->n)
 			{
-				swap_nodes(list, current->prev, current);
-				print_list(*list);
+				swap(list, temp->prev);
 				swapped = 1;
+				print_list(*list);
 			}
+			else
+				temp = temp->prev;
 		}
 	}
 }
